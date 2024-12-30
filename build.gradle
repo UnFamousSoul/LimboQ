@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.8'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.unfamoussoul'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {url = "https://repo.papermc.io/repository/maven-public/"}
+    maven {url = "https://maven.elytrium.net/repo/"}
+    maven {url = "https://papermc.io/repo/repository/maven-public/"}
+}
+
+dependencies {
+    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    compileOnly("net.elytrium.limboapi:api:1.1.27")
+}
+
+shadowJar {
+    getArchiveClassifier().set("")
+
+    relocate("net.elytrium.commons.velocity", "net.elytrium.limboapi.thirdparty.commons.velocity")
+    relocate("net.elytrium.commons.kyori", "net.elytrium.limboapi.thirdparty.commons.kyori")
+    relocate("net.elytrium.commons.config", "net.elytrium.limboapi.thirdparty.commons.config")
+}
+
+assemble.dependsOn(shadowJar)
+
+def targetJavaVersion = 17
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(targetJavaVersion)
+}
+
+def templateSource = file('src/main/templates')
+def templateDest = layout.buildDirectory.dir('generated/sources/templates')
+def generateTemplates = tasks.register('generateTemplates', Copy) { task ->
+    def props = ['version': project.version]
+    task.inputs.properties props
+
+    task.from templateSource
+    task.into templateDest
+    task.expand props
+}
+
+sourceSets.main.java.srcDir(generateTemplates.map { it.outputs })
+
+project.idea.project.settings.taskTriggers.afterSync generateTemplates
+project.eclipse.synchronizationTasks(generateTemplates)
