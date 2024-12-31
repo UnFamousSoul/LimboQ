@@ -1,4 +1,4 @@
-package com.unfamoussoul.limboQ;
+package com.unfamoussoul.limboQ.entities;
 
 public enum ServerStatus {
     NORMAL,

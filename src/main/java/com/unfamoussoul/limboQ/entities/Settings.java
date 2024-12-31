@@ -1,15 +1,16 @@
 package com.unfamoussoul.limboQ.entities;
 
-import net.elytrium.commons.config.YamlConfig;
+import com.unfamoussoul.limboQ.handlers.settings.SettingsHandler;
 
-public class Config extends YamlConfig {
+public class Settings extends SettingsHandler {
+
     @Ignore
-    public static final Config IMP = new Config();
+    public static final Settings IMP = new Settings();
+
+    public String PREFIX = "LimboQ";
 
     @Create
-    public MAIN MAIN;
-    @Create
-    public MESSAGES MESSAGES;
+    public Settings.MAIN MAIN;
 
     public static class MAIN {
         public String SERVER = "survival";
@@ -19,7 +20,7 @@ public class Config extends YamlConfig {
         public int CHECK_INTERVAL = 2;
 
         @Create
-        public Config.MAIN.WORLD WORLD;
+        public Settings.MAIN.WORLD WORLD;
 
         public static class WORLD {
             public String NAME = "LimboQ";
@@ -38,11 +39,14 @@ public class Config extends YamlConfig {
         }
     }
 
+    @Create
+    public Settings.MESSAGES MESSAGES;
+
     public static class MESSAGES {
-        public String QUEUE_MESSAGE = "Your position in queue: {0}";
-        public String CONNECTING_MESSAGE = "<green>Connecting to the server!";
-        public String SERVER_OFFLINE = "<red>Server is offline!";
-        public String RELOAD = "<green>LimboQ reloaded!";
+        public String QUEUE_MESSAGE = "{PRFX} Your position in queue: {0}";
+        public String CONNECTING_MESSAGE = "{PRFX} <green>Connecting to the server!";
+        public String SERVER_OFFLINE = "{PRFX} <red>Server is offline!";
+        public String RELOAD = "<green>reloaded!";
         public String RELOAD_FAILED = "<red>Reload failed!";
     }
 }

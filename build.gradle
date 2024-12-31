@@ -16,17 +16,45 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
-    compileOnly("net.elytrium.limboapi:api:1.1.27")
+    compileOnly("net.elytrium.limboapi:api:$limboapiVersion")
+
+    compileOnly("com.velocitypowered:velocity-api:$velocityVersion")
+    annotationProcessor("com.velocitypowered:velocity-api:$velocityVersion")
 }
 
 shadowJar {
     getArchiveClassifier().set("")
 
-    relocate("net.elytrium.commons.velocity", "net.elytrium.limboapi.thirdparty.commons.velocity")
-    relocate("net.elytrium.commons.kyori", "net.elytrium.limboapi.thirdparty.commons.kyori")
-    relocate("net.elytrium.commons.config", "net.elytrium.limboapi.thirdparty.commons.config")
+    exclude("META-INF/licenses/**")
+    exclude("META-INF/maven/**")
+    exclude("META-INF/versions/**")
+    exclude("META-INF/AL2.0")
+    exclude("META-INF/INFO_BIN")
+    exclude("META-INF/INFO_SRC")
+    exclude("META-INF/LGPL2.1")
+    exclude("META-INF/LICENSE")
+    exclude("META-INF/NOTICE")
+    exclude("META-INF/README")
+    exclude("META-INF/*.txt")
+    exclude("google/protobuf/**")
+    exclude("com/google/protobuf/**")
+    exclude("com/sun/jna/aix-ppc*/**")
+    exclude("com/sun/jna/darwin-aarch64/**")
+    exclude("com/sun/jna/freebsd-*/**")
+    exclude("com/sun/jna/linux-arm*/**")
+    exclude("com/sun/jna/linux-mips64el/**")
+    exclude("com/sun/jna/linux-ppc*/**")
+    exclude("com/sun/jna/linux-riscv64/**")
+    exclude("com/sun/jna/linux-s390x/**")
+    exclude("com/sun/jna/linux-x86/**")
+    exclude("com/sun/jna/openbsd-*/**")
+    exclude("com/sun/jna/sunos-*/**")
+    exclude("com/sun/jna/win32-x86/**")
+    exclude("org/apache/commons/codec/language/**")
+    exclude("org/checkerframework/**")
+    exclude("**/package-info.class")
+
+    minimize()
 }
 
 assemble.dependsOn(shadowJar)
