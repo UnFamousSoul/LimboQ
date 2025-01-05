@@ -5,6 +5,7 @@ import com.unfamoussoul.limboQ.commands.Reload;
 import com.unfamoussoul.limboQ.entities.Settings;
 import com.unfamoussoul.limboQ.entities.ServerStatus;
 import com.unfamoussoul.limboQ.handlers.QueueHandler;
+import com.unfamoussoul.limboQ.handlers.SettingsHandler;
 import com.unfamoussoul.limboQ.listeners.QueueListener;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
@@ -26,7 +27,6 @@ import net.elytrium.limboapi.api.player.GameMode;
 import net.elytrium.limboapi.api.player.LimboPlayer;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.LinkedList;
@@ -45,13 +45,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 )
 public class LimboQ {
 
-    @Inject
     private final Logger logger;
-
     private final ProxyServer server;
-    private final File configFile;
     private final LimboFactory factory;
+    private final Path directory;
 
+    public Settings settings;
     public LinkedList<LimboPlayer> queuedPlayers = new LinkedList<>();
     private RegisteredServer targetServer;
     private ServerStatus serverStatus;
@@ -60,15 +59,11 @@ public class LimboQ {
     private ScheduledTask pingTask;
 
     @Inject
-    public LimboQ(Logger logger, ProxyServer server, @DataDirectory Path dataDirectory) {
-        this.logger = logger;
-
-        this.server = server;
-
-        File dataDirectoryFile = dataDirectory.toFile();
-        configFile = new File(dataDirectoryFile, "config.yml");
-
+    public LimboQ(Logger _logger, ProxyServer _server, @DataDirectory Path _directory) {
+        logger = _logger;
+        server = _server;
         factory = (LimboFactory) this.server.getPluginManager().getPlugin("limboapi").flatMap(PluginContainer::getInstance).orElseThrow();
+        directory = _directory;
     }
 
     @Subscribe
@@ -77,8 +72,8 @@ public class LimboQ {
     }
 
     public void reload() {
-        Settings.IMP.reload(configFile, Settings.IMP.PREFIX);
-
+        settings = new SettingsHandler(directory, logger).settings;
+        
         queueServer = createQueueServer();
         server.getEventManager().register(this, new QueueListener(this));
 
@@ -92,29 +87,29 @@ public class LimboQ {
             manager.register(commandMeta, new Reload(this));
         }
 
-        Optional<RegisteredServer> server = getServer().getServer(Settings.IMP.MAIN.SERVER);
+        Optional<RegisteredServer> server = getServer().getServer(settings.MAIN_SERVER);
         server.ifPresentOrElse(registeredServer -> {
             targetServer = registeredServer;
             startPingTask();
             startQueueTask();
-        }, () -> logger.error("Server {} doesn't exists!", Settings.IMP.MAIN.SERVER));
+        }, () -> logger.error("Server {} doesn't exists!", settings.MAIN_SERVER));
     }
 
     private Limbo createQueueServer() {
         return factory.createLimbo(
                         factory.createVirtualWorld(
-                                Dimension.valueOf(Settings.IMP.MAIN.WORLD.DIMENSION),
-                                Settings.IMP.MAIN.WORLD.X,
-                                Settings.IMP.MAIN.WORLD.Y,
-                                Settings.IMP.MAIN.WORLD.Z,
-                                Settings.IMP.MAIN.WORLD.YAW,
-                                Settings.IMP.MAIN.WORLD.PITCH)
+                                Dimension.valueOf(settings.WORLD_DIMENSION),
+                                settings.WORLD_X,
+                                settings.WORLD_Y,
+                                settings.WORLD_Z,
+                                settings.WORLD_YAW,
+                                settings.WORLD_PITCH)
                 )
-                .setName(Settings.IMP.MAIN.WORLD.NAME)
-                .setWorldTime(Settings.IMP.MAIN.WORLD.WORLD_TIME)
-                .setGameMode(GameMode.valueOf(Settings.IMP.MAIN.WORLD.GAMEMODE))
-                .setViewDistance(Settings.IMP.MAIN.WORLD.VIEW_DISTANCE)
-                .setSimulationDistance(Settings.IMP.MAIN.WORLD.SIMULATION_DISTANCE);
+                .setName(settings.WORLD_NAME)
+                .setWorldTime(settings.WORLD_TIME)
+                .setGameMode(GameMode.valueOf(settings.WORLD_GAMEMODE))
+                .setViewDistance(settings.WORLD_VIEW_DISTANCE)
+                .setSimulationDistance(settings.WORLD_SIMULATION_DISTANCE);
     }
 
     public void queuePlayer(Player player) {
@@ -139,7 +134,7 @@ public class LimboQ {
 
     private void startQueueTask() {
         if (queueTask != null) queueTask.cancel();
-        queueTask = getServer().getScheduler().buildTask(this, this::queue).repeat(Settings.IMP.MAIN.CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
+        queueTask = getServer().getScheduler().buildTask(this, this::queue).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
     }
 
     private void queue() {
@@ -149,20 +144,20 @@ public class LimboQ {
                 if (queuedPlayers.isEmpty()) return;
 
                 LimboPlayer player = queuedPlayers.getFirst();
-                player.getProxyPlayer().sendRichMessage(Settings.IMP.MESSAGES.CONNECTING_MESSAGE);
+                player.getProxyPlayer().sendRichMessage(settings.LOCALE_CONNECTING_MESSAGE);
                 player.disconnect();
             }
             case FULL -> {
                 AtomicInteger i = new AtomicInteger(0);
-                queuedPlayers.forEach(p -> p.getProxyPlayer().sendRichMessage(MessageFormat.format(Settings.IMP.MESSAGES.QUEUE_MESSAGE, i.incrementAndGet())));
+                queuedPlayers.forEach(p -> p.getProxyPlayer().sendRichMessage(MessageFormat.format(settings.LOCALE_QUEUE_MESSAGE, i.incrementAndGet())));
             }
-            case OFFLINE -> queuedPlayers.forEach((p) -> p.getProxyPlayer().sendRichMessage(Settings.IMP.MESSAGES.SERVER_OFFLINE));
+            case OFFLINE -> queuedPlayers.forEach((p) -> p.getProxyPlayer().sendRichMessage(settings.LOCALE_SERVER_OFFLINE));
         }
     }
 
     private void startPingTask() {
         if (pingTask != null) pingTask.cancel();
-        pingTask = getServer().getScheduler().buildTask(this, this::ping).repeat(Settings.IMP.MAIN.CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
+        pingTask = getServer().getScheduler().buildTask(this, this::ping).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
     }
 
     private void ping() {

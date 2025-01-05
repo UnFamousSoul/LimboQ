@@ -1,0 +1,28 @@
+prefix: "LimboQ"
+
+main:
+  server: "survival"
+  queue-on-login: true
+  enable-kick-message: false
+  kick-message: "The server is full"
+  check-interval: 2
+
+world:
+  name: "LimboQ"
+  x: 0.5
+  y: 0.0
+  z: 0.5
+  yaw: 90.0
+  pitch: 0.0
+  dimension: "THE_END"
+  time: 18000
+  gamemode: "SURVIVAL"
+  view-distance: 2
+  simulation-distance: 2
+
+locale:
+  queue-message: "{PRFX} Your position in queue: {0}"
+  connecting-message: "{PRFX} <green>Connecting to the server!"
+  server-offline: "{PRFX} <red>Server is offline!"
+  reload: "<green>reloaded!"
+  reload-failed: "<red>Reload failed!"
