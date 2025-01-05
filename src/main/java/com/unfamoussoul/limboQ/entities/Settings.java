@@ -36,35 +36,35 @@ public class Settings {
 
         Section main = yaml.getSection("main");
         if (main != null) {
-            MAIN_SERVER = yaml.getString("server", "survival");
-            MAIN_QUEUE_ON_LOGIN = yaml.getBoolean("queue_on_login", true);
-            MAIN_ENABLE_KICK_MESSAGE = yaml.getBoolean("enable_kick_message", false);
-            MAIN_KICK_MESSAGE = yaml.getString("kick_message", "The server is full");
-            MAIN_CHECK_INTERVAL = yaml.getInt("check_interval", 2);
+            MAIN_SERVER = main.getString("server", "survival");
+            MAIN_QUEUE_ON_LOGIN = main.getBoolean("queue-on-login", true);
+            MAIN_ENABLE_KICK_MESSAGE = main.getBoolean("enable-kick-message", false);
+            MAIN_KICK_MESSAGE = main.getString("kick-message", "The server is full");
+            MAIN_CHECK_INTERVAL = main.getInt("check-interval", 2000);
         }
 
         Section world = yaml.getSection("world");
         if (world != null) {
-            WORLD_NAME = yaml.getString("name", "LimboQ");
-            WORLD_X = yaml.getDouble("x", 0.5);
-            WORLD_Y = yaml.getDouble("y", 0.0);
-            WORLD_Z = yaml.getDouble("z", 0.5);
-            WORLD_YAW = yaml.getFloat("yaw", 90.0F);
-            WORLD_PITCH = yaml.getFloat("pitch", 0.0F);
-            WORLD_DIMENSION = yaml.getString("dimension", "THE_END");
-            WORLD_TIME = yaml.getInt("time", 18000);
-            WORLD_GAMEMODE = yaml.getString("gamemode", "SURVIVAL");
-            WORLD_VIEW_DISTANCE = yaml.getInt("view_distance", 2);
-            WORLD_SIMULATION_DISTANCE = yaml.getInt("simulation_distance", 2);
+            WORLD_NAME = world.getString("name", "LimboQ");
+            WORLD_X = world.getDouble("x", 0.5);
+            WORLD_Y = world.getDouble("y", 1.0);
+            WORLD_Z = world.getDouble("z", 0.5);
+            WORLD_YAW = world.getFloat("yaw", 90.0F);
+            WORLD_PITCH = world.getFloat("pitch", 0.0F);
+            WORLD_DIMENSION = world.getString("dimension", "THE_END");
+            WORLD_TIME = world.getInt("time", 18000);
+            WORLD_GAMEMODE = world.getString("gamemode", "SURVIVAL");
+            WORLD_VIEW_DISTANCE = world.getInt("view-distance", 2);
+            WORLD_SIMULATION_DISTANCE = world.getInt("simulation-distance", 2);
         }
 
         Section locale = yaml.getSection("locale");
         if (locale != null) {
-            LOCALE_QUEUE_MESSAGE = yaml.getString("queue message", "{PRFX} Your position in queue: {0}");
-            LOCALE_CONNECTING_MESSAGE = yaml.getString("connecting_message", "{PRFX} <green>Connecting to the server!");
-            LOCALE_SERVER_OFFLINE = yaml.getString("server_offline", "{PRFX} <red>Server is offline!");
-            LOCALE_RELOAD = yaml.getString("reload", "<green>reloaded!");
-            LOCALE_RELOAD_FAILED = yaml.getString("reload_failed", "<red>Reload failed!");
+            LOCALE_QUEUE_MESSAGE = locale.getString("queue-message", "{PRFX} Your position in queue: {0}").replace("{PRFX}", PREFIX);
+            LOCALE_CONNECTING_MESSAGE = locale.getString("connecting-message", "{PRFX} <green>Connecting to the server!").replace("{PRFX}", PREFIX);
+            LOCALE_SERVER_OFFLINE = locale.getString("server-offline", "{PRFX} <red>Server is offline!").replace("{PRFX}", PREFIX);
+            LOCALE_RELOAD = locale.getString("reload", "<green>reloaded!").replace("{PRFX}", PREFIX);
+            LOCALE_RELOAD_FAILED = locale.getString("reload-failed", "<red>Reload failed!").replace("{PRFX}", PREFIX);
         }
     }
 }

@@ -134,7 +134,7 @@ public class LimboQ {
 
     private void startQueueTask() {
         if (queueTask != null) queueTask.cancel();
-        queueTask = getServer().getScheduler().buildTask(this, this::queue).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
+        queueTask = getServer().getScheduler().buildTask(this, this::queue).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.MILLISECONDS).schedule();
     }
 
     private void queue() {
@@ -157,7 +157,7 @@ public class LimboQ {
 
     private void startPingTask() {
         if (pingTask != null) pingTask.cancel();
-        pingTask = getServer().getScheduler().buildTask(this, this::ping).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.SECONDS).schedule();
+        pingTask = getServer().getScheduler().buildTask(this, this::ping).repeat(settings.MAIN_CHECK_INTERVAL, TimeUnit.MILLISECONDS).schedule();
     }
 
     private void ping() {
