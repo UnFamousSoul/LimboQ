@@ -11,7 +11,7 @@ public record QueueListener(LimboQ plugin) {
 
     @Subscribe()
     public void onLogin(LoginLimboRegisterEvent event) {
-        if (!plugin.settings.MAIN_QUEUE_ON_LOGIN) return;
+        if (!plugin.config.MAIN_QUEUE_ON_LOGIN) return;
 
         plugin.refreshStatus();
         if (plugin.getServerStatus() == ServerStatus.NORMAL) return;
@@ -22,13 +22,13 @@ public record QueueListener(LimboQ plugin) {
 
     @Subscribe
     public void onLoginLimboRegister(LoginLimboRegisterEvent event) {
-        if (!plugin.settings.MAIN_ENABLE_KICK_MESSAGE) return;
+        if (!plugin.config.MAIN_ENABLE_KICK_MESSAGE) return;
 
         event.setOnKickCallback(kickEvent -> {
             if (!kickEvent.getServer().equals(plugin.getTargetServer()) || kickEvent.getServerKickReason().isEmpty()) return false;
 
             String reason = ((TextComponent) kickEvent.getServerKickReason().get()).content();
-            if (!reason.contains(plugin.settings.MAIN_KICK_MESSAGE)) return false;
+            if (!reason.contains(plugin.config.MAIN_KICK_MESSAGE)) return false;
 
             plugin.queuePlayer(kickEvent.getPlayer());
             return true;

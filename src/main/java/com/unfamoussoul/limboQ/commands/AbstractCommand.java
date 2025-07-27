@@ -1,23 +1,16 @@
 package com.unfamoussoul.limboQ.commands;
 
 import com.google.common.collect.ImmutableList;
-import com.unfamoussoul.limboQ.LimboQ;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 
 import java.util.List;
 
 public abstract class AbstractCommand implements SimpleCommand {
-    private final LimboQ plugin;
     private final String slug;
 
-    public AbstractCommand(LimboQ plugin, String slug) {
-        this.plugin = plugin;
+    public AbstractCommand(String slug) {
         this.slug = slug;
-    }
-
-    public LimboQ getPlugin() {
-        return plugin;
     }
 
     @Override

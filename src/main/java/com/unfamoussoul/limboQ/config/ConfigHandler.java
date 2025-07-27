@@ -1,6 +1,5 @@
-package com.unfamoussoul.limboQ.handlers;
+package com.unfamoussoul.limboQ.config;
 
-import com.unfamoussoul.limboQ.entities.Settings;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -11,11 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-public class SettingsHandler{
+public class ConfigHandler {
     private final String name = "config.yml";
     private final Path directory;
     private final Logger logger;
-    public Settings settings;
+    public Config config;
 
     @Nullable
     private @Unmodifiable YamlDocument Check() {
@@ -38,7 +37,7 @@ public class SettingsHandler{
     @Nullable
     private YamlDocument CreateConfig() {
         try {
-            InputStream file_path = SettingsHandler.class.getResourceAsStream("/" + name);
+            InputStream file_path = ConfigHandler.class.getResourceAsStream("/" + name);
             if (file_path == null) return null;
             YamlDocument c = YamlDocument.create(new File(directory.toFile(), name), file_path);
             c.update();
@@ -49,12 +48,12 @@ public class SettingsHandler{
         }
     }
 
-    public SettingsHandler(Path _directory, Logger _logger) {
+    public ConfigHandler(Path _directory, Logger _logger) {
         directory = _directory;
         logger = _logger;
 
         YamlDocument yaml = Check();
         if (yaml == null) return;
-        settings = new Settings(yaml);
+        config = new Config(yaml);
     }
 }
